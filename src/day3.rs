@@ -1,15 +1,18 @@
 mod input;
 
+fn get_prio(c: char) -> u32 {
+    match c.is_lowercase() {
+        true => c as u32 - 96,
+        false => c as u32 - 38,
+    }
+}
+
 fn part1(inp: &str) -> u32 {
     inp.to_string().lines().fold(0, |score, line| {
         let (left, right) = line.split_at(line.len() / 2);
         for c in left.chars() {
             if right.contains(c) {
-                return score
-                    + match c.is_lowercase() {
-                        true => c as u32 - 96,
-                        false => c as u32 - 38,
-                    };
+                return score + get_prio(c);
             }
         }
         score
@@ -27,11 +30,7 @@ fn part2(inp: &str) -> u32 {
 
         for c in elve1.chars() {
             if elve2.contains(c) && elve3.contains(c) {
-                score
-                    += match c.is_lowercase() {
-                        true => c as u32 - 96,
-                        false => c as u32 - 38,
-                    };
+                score += get_prio(c);
                 break;
             }
         }
