@@ -60,7 +60,7 @@ fn main() {
     let input_string = input::get_input(2);
 
     let score: u32 = input_string.lines().fold(0, |score, line| {
-        let hands = line.split_whitespace().map(|x| Hand::from(x)).collect::<Vec<Hand>>();
+        let hands = line.split_whitespace().map(Hand::from).collect::<Vec<Hand>>();
         assert!(hands.len() == 2, "Invalid match string");
         
         score + hands[1].get_score(&hands[0])

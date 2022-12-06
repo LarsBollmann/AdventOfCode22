@@ -2,7 +2,7 @@ mod input;
 
 fn group_by_elves(input: &str) -> Vec<Vec<u64>> {
    input.lines().fold(vec![vec![]], |mut acc, line| {
-      if line == "" {
+      if line.is_empty() {
           acc.push(vec![]);
       } else {
           acc.last_mut().unwrap().push(line.parse::<u64>().unwrap());

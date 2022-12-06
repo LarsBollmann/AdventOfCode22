@@ -36,7 +36,7 @@ fn part2(inp: &str) -> u32 {
         }
     }
 
-    return score;
+    score
 }
 
 fn main() {

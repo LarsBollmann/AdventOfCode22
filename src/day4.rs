@@ -2,11 +2,11 @@ mod input;
 
 fn parse_input(input: &str) -> Vec<(usize, usize, usize, usize)> {
     input.lines().map(|line| {
-        let parts = line.split(",").map(|side| {
-            side.split("-").map(|s| s.parse::<usize>().unwrap()).collect::<Vec<usize>>()
-        }).flatten().collect::<Vec<usize>>();
+        let parts = line.split(',').flat_map(|side| {
+            side.split('-').map(|s| s.parse::<usize>().unwrap()).collect::<Vec<usize>>()
+        }).collect::<Vec<usize>>();
         assert!(parts.len() == 4, "Invalid input");
-        return (parts[0], parts[1], parts[2], parts[3]);
+        (parts[0], parts[1], parts[2], parts[3])
     }).collect()
 }
 
@@ -30,7 +30,7 @@ fn does_overlap(start1: &usize, end1: &usize, start2: &usize, end2: &usize) -> b
     false
 }
 
-fn part1(inp: &Vec<(usize, usize, usize, usize)>) -> u32 {
+fn part1(inp: &[(usize, usize, usize, usize)]) -> u32 {
     inp.iter().fold(0, |acc, (start1, end1, start2, end2)| {
         if is_contained(start1, end1, start2, end2) {
             return acc + 1;
@@ -39,7 +39,7 @@ fn part1(inp: &Vec<(usize, usize, usize, usize)>) -> u32 {
     })
 }
 
-fn part2(inp: &Vec<(usize, usize, usize, usize)>) -> u32 {
+fn part2(inp: &[(usize, usize, usize, usize)]) -> u32 {
     inp.iter().fold(0, |acc, (start1, end1, start2, end2)| {
         if does_overlap(start1, end1, start2, end2) {
             return acc + 1;
@@ -69,14 +69,14 @@ mod tests {
     #[test]
     fn test_part_1() {
         let parsed_input = parse_input(INPUT);
-        let result = part1(parsed_input);
+        let result = part1(&parsed_input);
         assert_eq!(result, 2);
     }
 
     #[test]
     fn test_part_2() {
         let parsed_input = parse_input(INPUT);
-        let result = part2(parsed_input);
+        let result = part2(&parsed_input);
         assert_eq!(result, 4);
     }
 }
