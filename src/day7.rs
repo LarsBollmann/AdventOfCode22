@@ -22,13 +22,11 @@ fn get_folders_with_sizes(input: &str) -> HashMap<String, usize> {
                     panic!("Invalid cd command");
                 }
             }
-            println!("{:?}", current_path);
         }
         if let Ok(size) = line.split_whitespace().next().unwrap().parse::<usize>() {
             let mut path = String::from("");
             for dir in current_path.iter() {
                 path.push_str(dir);
-                println!("Adding {} to {}", size, path);
                 if folder_sizes.contains_key(&path) {
                     let current_size = folder_sizes.get(&path).unwrap();
                     folder_sizes.insert(path.clone(), current_size + size);
@@ -54,9 +52,19 @@ fn part_1(input: &str) -> usize {
     small_folders.sum()
 }
 
+fn part_2(input: &str) -> usize {
+    let folders = get_folders_with_sizes(input);
+    let needed_space = 30000000 - (70000000 - folders.get("/").unwrap());
+    let mut sizes = folders.iter().map(|(_k, v)| *v).collect::<Vec<usize>>();
+    sizes.sort();
+    *sizes.iter().find(|&&v| v >= needed_space).unwrap()
+
+}
+
 fn main() {
     let input = input::get_input(7);
     println!("Part 1: {}", part_1(&input));
+    println!("Part 2: {}", part_2(&input));
 }
 
 #[cfg(test)]
@@ -89,14 +97,11 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        let folders = get_folders_with_sizes(INPUT);
-        let small_folders = folders.iter().filter_map(|(_k, v)| {
-            if *v <= 100000 {
-                Some(*v)
-            } else {
-                None
-            }
-        });
-        assert_eq!(small_folders.sum::<usize>(), 95437);
+        assert_eq!(part_1(INPUT), 95437);
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(part_2(INPUT), 24933642);
     }
 }
