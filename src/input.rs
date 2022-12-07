@@ -13,7 +13,7 @@ pub fn get_input(day: u8) -> String {
             "Cookie",
             format!(
                 "session={}",
-                env::var("session").expect("Could not find session environment variable")
+                env::var("AOC_SESSION").expect("Could not find session environment variable")
             ),
         )
         .send()
