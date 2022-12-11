@@ -89,21 +89,19 @@ fn part_2(instructions: Vec<Instruction>) -> String {
 
 #[cfg(test)]
 mod tests {
-    use std::fs;
-
     use super::*;
+
+    const INPUT: &str = include_str!("../test_input/day10.txt");
 
     #[test]
     fn test_part_1() {
-        let inp = fs::read_to_string("src/day10_test_input.txt").unwrap();
-        let inp = parse_input(&inp);
+        let inp = parse_input(INPUT);
         assert_eq!(part_1(inp), 13140);
     }
 
     #[test]
     fn test_part_2() {
-        let inp = fs::read_to_string("src/day10_test_input.txt").unwrap();
-        let inp = parse_input(&inp);
+        let inp = parse_input(INPUT);
         assert_eq!(part_2(inp), 
 "##..##..##..##..##..##..##..##..##..##..
 ###...###...###...###...###...###...###.
