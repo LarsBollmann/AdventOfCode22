@@ -21,22 +21,70 @@ impl Rope {
 
     fn move_up(&mut self) {
         self.head.1 += 1;
-        self.adjust_tail();
+        let distance = self.get_distance();
+        if distance == 2.0 {
+            self.tail.1 += 1;
+        } else if distance > 2.0 {
+            if self.tail.0 < self.head.0 {
+                self.tail.0 += 1;
+                self.tail.1 += 1;
+            } else {
+                self.tail.0 -= 1;
+                self.tail.1 += 1;
+            }
+        }
+        self.visited_positions.insert(self.tail, true);
     }
 
     fn move_down(&mut self) {
         self.head.1 -= 1;
-        self.adjust_tail();
+        let distance = self.get_distance();
+        if distance == 2.0 {
+            self.tail.1 -= 1;
+        } else if distance > 2.0 {
+            if self.tail.0 < self.head.0 {
+                self.tail.0 += 1;
+                self.tail.1 -= 1;
+            } else {
+                self.tail.0 -= 1;
+                self.tail.1 -= 1;
+            }
+        }
+        self.visited_positions.insert(self.tail, true);
     }
 
     fn move_left(&mut self) {
         self.head.0 -= 1;
-        self.adjust_tail();
+        let distance = self.get_distance();
+        if distance == 2.0 {
+            self.tail.0 -= 1;
+        } else if distance > 2.0 {
+            if self.tail.1 < self.head.1 {
+                self.tail.0 -= 1;
+                self.tail.1 += 1;
+            } else {
+                self.tail.0 -= 1;
+                self.tail.1 -= 1;
+            }
+        }
+        self.visited_positions.insert(self.tail, true);
     }
 
     fn move_right(&mut self) {
         self.head.0 += 1;
-        self.adjust_tail();
+        let distance = self.get_distance();
+        if distance == 2.0 {
+            self.tail.0 += 1;
+        } else if distance > 2.0 {
+            if self.tail.1 < self.head.1 {
+                self.tail.0 += 1;
+                self.tail.1 += 1;
+            } else {
+                self.tail.0 += 1;
+                self.tail.1 -= 1;
+            }
+        }
+        self.visited_positions.insert(self.tail, true);
     }
 
     fn get_distance(&self) -> f64 {
@@ -46,47 +94,7 @@ impl Rope {
         )
     }
 
-    fn is_tail_touching(&self) -> bool {
-        self.get_distance() < 2.0
-    }
-
-    fn adjust_tail(&mut self) {
-        if self.is_tail_touching() {
-            return;
-        }
-        if self.get_distance() == 2.0 {
-            self.tail.0 += (self.head.0-self.tail.0)/2;
-            self.tail.1 += (self.head.1-self.tail.1)/2;
-        }
-        if self.get_distance() > 2.0 {
-            if self.head.0 - 1 > self.tail.0 && self.head.1 > self.tail.1 {
-                self.tail.0 += 1;
-                self.tail.1 += 1;
-            } else if self.head.0 - 1 > self.tail.0 && self.head.1 < self.tail.1 {
-                self.tail.0 += 1;
-                self.tail.1 -= 1;
-            } else if self.head.0 + 1 < self.tail.0 && self.head.1 > self.tail.1 {
-                self.tail.0 -= 1;
-                self.tail.1 += 1;
-            } else if self.head.0 + 1 < self.tail.0 && self.head.1 < self.tail.1 {
-                self.tail.0 -= 1;
-                self.tail.1 -= 1;
-            } else if self.head.0 > self.tail.0 && self.head.1 - 1 > self.tail.1 {
-                self.tail.0 += 1;
-                self.tail.1 += 1;
-            } else if self.head.0 > self.tail.0 && self.head.1 + 1 < self.tail.1 {
-                self.tail.0 += 1;
-                self.tail.1 -= 1;
-            } else if self.head.0 < self.tail.0 && self.head.1 - 1 > self.tail.1 {
-                self.tail.0 -= 1;
-                self.tail.1 += 1;
-            } else if self.head.0 < self.tail.0 && self.head.1 + 1 < self.tail.1 {
-                self.tail.0 -= 1;
-                self.tail.1 -= 1;
-            }
-        }
-        self.visited_positions.insert(self.tail, true);
-    }
+    
 }
 
 impl Display for Rope {
