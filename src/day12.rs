@@ -2,7 +2,6 @@ use std::collections::{BinaryHeap, HashSet};
 use std::cmp::{Ord, PartialOrd, Ordering};
 mod input;
 
-
 type Heightmap = Vec<Vec<char>>;
 
 #[derive(Debug,Hash,PartialEq,Eq,Clone,Copy)]
@@ -67,7 +66,7 @@ fn parse_input(input: &str) -> (Heightmap, Position, Position) {
     (heightmap, start_position, end_position)
 }
 
-fn get_shortest_steps(heightmap: &Heightmap, start_position: Position, end_position: Position) -> Option<usize> {
+fn part_1(heightmap: &Heightmap, start_position: Position, end_position: Position) -> Option<usize> {
     let mut queue = BinaryHeap::new();
     let mut visited = HashSet::new();
 
@@ -90,32 +89,43 @@ fn get_shortest_steps(heightmap: &Heightmap, start_position: Position, end_posit
             visited.insert(neighbor);
             queue.push(QueueItem { position: neighbor, cost: cost + 1 });
         }
+
     }
     None
 }
 
-fn part_2(heightmap: &Heightmap, end_position: Position) -> usize {
-    let mut possible_start_positions = Vec::new();
+fn part_2(heightmap: &Heightmap, start_position: Position) -> usize {
+    let mut queue = BinaryHeap::new();
+    let mut visited = HashSet::new();
 
-    for y in 0..heightmap.len() {
-        for x in 0..heightmap[0].len() {
-            if heightmap[y][x] == 'a' {
-                possible_start_positions.push(Position { x, y });
-            }
+    let rows = heightmap.len();
+    let columns = heightmap[0].len();
+
+    queue.push(QueueItem { position: start_position, cost: 0 });
+
+    while let Some(QueueItem { position, cost }) = queue.pop() {
+        if heightmap[position.y][position.x] == 'a' {
+            return cost;
         }
-    }
 
-    possible_start_positions
-        .iter()
-        .filter_map(|&start_position|  get_shortest_steps(heightmap, start_position, end_position))
-        .min()
-        .unwrap()
+        let current_height = heightmap[position.y][position.x] as u8;
+
+        let mut neighbors = position.neighbors(rows, columns);
+        neighbors.retain(|neighbor| !visited.contains(neighbor) && heightmap[neighbor.y][neighbor.x] as u8 + 1 >= current_height);
+
+        for neighbor in neighbors {
+            visited.insert(neighbor);
+            queue.push(QueueItem { position: neighbor, cost: cost + 1 });
+        }
+
+    }
+    panic!("No path found");
 }
 
 fn main() {
     let inp = input::get_input(12);
     let (heightmap, start_position, end_position) = parse_input(&inp);
-    println!("Part 1: {}", get_shortest_steps(&heightmap, start_position, end_position).unwrap());
+    println!("Part 1: {}", part_1(&heightmap, start_position, end_position).unwrap());
     println!("Part 2: {}", part_2(&heightmap, end_position));
 }
 
@@ -132,7 +142,7 @@ abdefghi";
     #[test]
     fn test_part_1() {
         let (heightmap, start_position, end_position) = parse_input(INPUT);
-        assert_eq!(get_shortest_steps(&heightmap, start_position, end_position).unwrap(), 31);
+        assert_eq!(part_1(&heightmap, start_position, end_position).unwrap(), 31);
     }
 
     #[test]
