@@ -1,7 +1,10 @@
 mod input;
 
 use core::panic;
-use std::{str::Chars, cmp::{Ordering, PartialOrd, Ord}};
+use std::{
+    cmp::{Ord, Ordering},
+    str::Chars,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum Entry {
@@ -11,13 +14,26 @@ enum Entry {
 
 impl Ord for Entry {
     fn cmp(&self, other: &Self) -> Ordering {
-        compare(self, other)
+        match (self, other) {
+            (Entry::List(packet_left), Entry::List(packet_right)) => {
+                for (entry_left, entry_right) in packet_left.iter().zip(packet_right.iter()) {
+                    match entry_left.cmp(entry_right) {
+                        Ordering::Equal => continue,
+                        order => return order,
+                    }
+                }
+                packet_left.len().cmp(&packet_right.len())
+            },
+            (Entry::Number(n1), Entry::List(_)) => Self::List(vec![Self::Number(*n1)]).cmp(other),
+            (Entry::List(_), Entry::Number(n2)) => self.cmp(&Self::List(vec![Self::Number(*n2)])),
+            (Entry::Number(n1), Entry::Number(n2)) => n1.cmp(n2),
+        }
     }
 }
 
 impl PartialOrd for Entry {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(compare(self, other))
+        Some(self.cmp(other))
     }
 }
 
@@ -56,7 +72,10 @@ fn parse_packet_pairs(input: &str) -> Vec<(Entry, Entry)> {
         let mut packets = packet_pair.split('\n');
         let packet1 = packets.next().unwrap();
         let packet2 = packets.next().unwrap();
-        packet_vec.push((get_packet_vector(&mut packet1.chars()), get_packet_vector(&mut packet2.chars())));
+        packet_vec.push((
+            get_packet_vector(&mut packet1.chars()),
+            get_packet_vector(&mut packet2.chars()),
+        ));
     }
 
     packet_vec
@@ -64,51 +83,26 @@ fn parse_packet_pairs(input: &str) -> Vec<(Entry, Entry)> {
 
 fn parse_all_packets(input: &str) -> Vec<Entry> {
     let lines = input.lines();
-    lines.filter(|line| !line.is_empty()).map(|line| get_packet_vector(&mut line.chars())).collect()
-}
-
-fn compare(packet_left: &Entry, packet_right: &Entry) -> Ordering {
-    if let (Entry::List(packet_left), Entry::List(packet_right)) = (packet_left, packet_right) {
-        for (entry_left, entry_right) in packet_left.iter().zip(packet_right.iter()) {
-            match (entry_left, entry_right) {
-                (Entry::Number(n1), Entry::Number(n2)) => {
-                    match n1.cmp(n2) {
-                        Ordering::Equal => continue,
-                        other => return other,
-                    }
-                },
-                (v1, v2) if matches!(v1, Entry::List(_)) && matches!(v2, Entry::List(_)) => match compare(v1, v2) {
-                    Ordering::Equal => continue,
-                    other => return other,
-                },
-                (v1, Entry::Number(n2)) if matches!(v1, Entry::List(_)) => match compare(v1, &Entry::List(vec![Entry::Number(*n2)])) {
-                    Ordering::Equal => continue,
-                    other => return other,
-                },
-                (Entry::Number(n1), v2) if matches!(v2, Entry::List(_)) => match compare(&Entry::List(vec![Entry::Number(*n1)]), v2) {
-                    Ordering::Equal => continue,
-                    other => return other,
-                },
-                _ => panic!(),
-            }
-        }
-        return packet_left.len().cmp(&packet_right.len())
-    }
-    panic!();
+    lines
+        .filter(|line| !line.is_empty())
+        .map(|line| get_packet_vector(&mut line.chars()))
+        .collect()
 }
 
 fn part1(packet_pairs: &[(Entry, Entry)]) -> usize {
-    let orders: Vec<Ordering> = packet_pairs.iter().map(|(packet_left, packet_right)| {
-        compare(packet_left, packet_right)
-    }).collect();
+    let orders: Vec<Ordering> = packet_pairs
+        .iter()
+        .map(|(packet_left, packet_right)| packet_left.cmp(packet_right))
+        .collect();
 
-    orders.iter().enumerate().fold(0, |acc, (i, order)| {
-        match order {
-            Ordering::Less => acc + i+1,
+    orders
+        .iter()
+        .enumerate()
+        .fold(0, |acc, (i, order)| match order {
+            Ordering::Less => acc + i + 1,
             Ordering::Equal => panic!(),
             _ => acc,
-        }
-    })
+        })
 }
 
 fn part2(packets: &mut Vec<Entry>) -> usize {
@@ -117,13 +111,17 @@ fn part2(packets: &mut Vec<Entry>) -> usize {
 
     packets.sort();
 
-    let i1 = packets.iter().position(|packet| {
-        *packet == Entry::List(vec![Entry::Number(2)])
-    }).unwrap() + 1;
+    let i1 = packets
+        .iter()
+        .position(|packet| *packet == Entry::List(vec![Entry::Number(2)]))
+        .unwrap()
+        + 1;
 
-    let i2 = packets.iter().position(|packet| {
-        *packet == Entry::List(vec![Entry::Number(6)])
-    }).unwrap() + 1;
+    let i2 = packets
+        .iter()
+        .position(|packet| *packet == Entry::List(vec![Entry::Number(6)]))
+        .unwrap()
+        + 1;
 
     i1 * i2
 }
