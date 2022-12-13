@@ -35,6 +35,7 @@ struct QueueItem {
     cost: usize,
 }
 
+// We want the BinaryHeap to be a min-heap, so we need to reverse the ordering
 impl Ord for QueueItem {
     fn cmp(&self, other: &Self) -> Ordering {
         other.cost.cmp(&self.cost)
@@ -43,7 +44,7 @@ impl Ord for QueueItem {
 
 impl PartialOrd for QueueItem {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
+        Some(other.cost.cmp(&self.cost))
     }
 }
 
