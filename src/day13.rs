@@ -21,21 +21,6 @@ impl PartialOrd for Entry {
     }
 }
 
-impl std::fmt::Display for Entry {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Entry::List(list) => {
-                let mut s = String::new();
-                for entry in list {
-                    s.push_str(&format!("{},", entry));
-                }
-                write!(f, "[{}]", s)
-            },
-            Entry::Number(n) => write!(f, "{}", n),
-        }
-    }
-}
-
 fn get_packet_vector(packet_chars: &mut Chars) -> Entry {
     let mut packet_vector = Vec::new();
 
@@ -107,10 +92,7 @@ fn compare(packet_left: &Entry, packet_right: &Entry) -> Ordering {
                 _ => panic!(),
             }
         }
-        match packet_left.len().cmp(&packet_right.len()) {
-            Ordering::Equal => return Ordering::Equal,
-            other => return other,
-        }
+        return packet_left.len().cmp(&packet_right.len())
     }
     panic!();
 }
