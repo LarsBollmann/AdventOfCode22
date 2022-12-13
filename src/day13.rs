@@ -1,6 +1,5 @@
 mod input;
 
-use core::panic;
 use std::{
     cmp::{Ord, Ordering},
     str::Chars,
@@ -23,7 +22,7 @@ impl Ord for Entry {
                     }
                 }
                 packet_left.len().cmp(&packet_right.len())
-            },
+            }
             (Entry::Number(n1), Entry::List(_)) => Self::List(vec![Self::Number(*n1)]).cmp(other),
             (Entry::List(_), Entry::Number(n2)) => self.cmp(&Self::List(vec![Self::Number(*n2)])),
             (Entry::Number(n1), Entry::Number(n2)) => n1.cmp(n2),
