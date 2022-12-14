@@ -152,18 +152,14 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        println!("Input: {}", INPUT);
         let mut grid = parse_input(INPUT);
-        println!("Positions: {}", grid);
         assert_eq!(simulate_sand(&mut grid), 24);
     }
 
     #[test]
     fn test_part2() {
-        println!("Input: {}", INPUT);
         let mut grid = parse_input(INPUT);
         grid.floor = Some(grid.max.y + 2);
-        println!("Positions: {}", grid);
         assert_eq!(simulate_sand(&mut grid), 93);
     }
 }
