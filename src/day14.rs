@@ -59,13 +59,15 @@ impl fmt::Display for Grid {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "\x1B[2J\x1B[1;1H")?;
 
-        for y in 0..self.max.y + 1 {
+        for y in 0..(if self.floor.is_some() {self.floor.unwrap()} else {self.max.y}) + 1 {
             for x in self.min.x..self.max.x + 1 {
                 let pos = Position { x, y };
                 if self.rocks.contains(&pos) {
                     write!(f, "#")?;
                 } else if self.sand.contains(&pos) {
                     write!(f, "+")?;
+                } else if self.floor.is_some() && y == self.floor.unwrap() {
+                    write!(f, "~")?;
                 } else {
                     write!(f, ".")?;
                 }
@@ -132,10 +134,14 @@ fn simulate_sand(grid: &mut Grid) -> usize {
 fn main() {
     let inp = input::get_input(14);
     let mut grid = parse_input(&inp);
-    println!("Part 1: {}", simulate_sand(&mut grid));
+    let solution_1 = simulate_sand(&mut grid);
+    println!("{}", grid);
     grid.floor = Some(grid.max.y + 2);
     grid.sand = HashSet::new();
-    println!("Part 2: {}", simulate_sand(&mut grid));
+    let solution_2 = simulate_sand(&mut grid);
+    println!("{}", grid);
+    println!("Part 1: {}", solution_1);
+    println!("Part 2: {}", solution_2);
 }
 
 #[cfg(test)]
