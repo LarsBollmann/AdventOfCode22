@@ -181,7 +181,8 @@ fn part_1(valves: HashMap<&str, Valve>) -> usize {
 // 2. I am right and my input specifically happens to be one of the cases where this works
 // 3. I am right and the generation algorithm for the inputs somehow makes sure that this works
 // But since i have only my own input I can't really tell.
-// Anyway, spent way too much time on this so already so... Yeah.
+// I also came up with a different solution that should work in all cases
+// but I spent way too much time on this already so... Yeah.
 fn part_2(valves: HashMap<&str, Valve>) -> usize {
     let mut max = 0;
     for i in 1..valves.len() {
