@@ -218,7 +218,7 @@ Valve JJ has flow rate=21; tunnel leads to valve II";
 
     #[test]
     fn test_part2() {
-        let parse_input = parse_input(INPUT);
+        //let parse_input = parse_input(INPUT);
         // Fails because of the reason mentioned in the comment above
         // assert_eq!(part_2(parse_input), 1707);
     }
