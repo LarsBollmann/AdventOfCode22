@@ -116,13 +116,14 @@ fn part_1(inp: &str, n: usize) -> i64 {
     let mut round = 0;
     let mut height_old = -1;
 
+    // Loop over every rock shape n times
     while round < n {
         let rock_shape = &rock_shapes[i];
         let mut position = chamber.get_starting_position();
         position = chamber.move_and_clamp(rock_shape, position, movements[i_wind]);
         i_wind = (i_wind + 1) % num_movements;
 
-        // Loop over every rock shape
+        // Loop until cant move down anymore
         loop {
             if chamber.does_collide(rock_shape, (position.0 - 1, position.1)) {
                 current_pattern.push_back((i, chamber.highest_position - height_old, i_wind));
