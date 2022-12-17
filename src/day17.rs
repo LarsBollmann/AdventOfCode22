@@ -120,36 +120,31 @@ fn part_1(inp: &str, n: usize) -> i64 {
     while round < n {
         let rock_shape = &rock_shapes[i];
         let mut position = chamber.get_starting_position();
-        position = chamber.move_and_clamp(rock_shape, position, movements[i_wind]);
-        i_wind = (i_wind + 1) % num_movements;
 
         // Loop until cant move down anymore
         loop {
+            position = chamber.move_and_clamp(rock_shape, position, movements[i_wind]);
+            i_wind = (i_wind + 1) % num_movements;
+
             if chamber.does_collide(rock_shape, (position.0 - 1, position.1)) {
                 current_pattern.push_back((i, chamber.highest_position - height_old, i_wind));
                 height_old = chamber.highest_position;
                 chamber.insert_rock_shape(rock_shape, position);
                 break;
             }
-            position =
-                chamber.move_and_clamp(rock_shape, (position.0 - 1, position.1), movements[i_wind]);
-            i_wind = (i_wind + 1) % num_movements;
+
+            position = (position.0 - 1, position.1);
         }
         if current_pattern.len() == 10 {
-            let pattern_str = current_pattern
-                .iter()
-                .map(|(i, diff, wind)| format!("{}.{},{};", i, diff, wind))
-                .collect::<String>();
-
             if let Some((r, height)) =
-                patterns.insert(pattern_str, (round, chamber.highest_position))
+                patterns.insert(current_pattern.clone(), (round, chamber.highest_position))
             {
                 let period = round - r;
                 let diff = chamber.highest_position - height;
-                let mut rounds_left = n - round;
+                let rounds_left = n - round;
                 total += diff * (rounds_left / period) as i64;
-                rounds_left -= rounds_left % period;
-                round += rounds_left;
+                let rounds_skipped = rounds_left - (rounds_left % period);
+                round += rounds_skipped;
             }
             current_pattern.pop_front();
         }
